@@ -1,0 +1,113 @@
+.advertisement-details-container {
+  padding: 2rem 0;
+}
+
+.advertisement-details-card {
+  padding: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.main-photo-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.main-photo {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
+.additional-photos {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+}
+
+.additional-photo {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+.additional-photo:hover {
+  transform: scale(1.05);
+}
+
+.status-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  color: white;
+  font-weight: bold;
+}
+
+.status-lost {
+  background-color: #dc3545;
+}
+
+.status-found {
+  background-color: #28a745;
+}
+
+.advertisement-info {
+  padding: 1rem;
+}
+
+.info-section {
+  margin-bottom: 2rem;
+}
+
+.info-section h4 {
+  color: #333;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+  padding-bottom: 0.5rem;
+}
+
+.info-section p {
+  margin-bottom: 0.5rem;
+  color: #666;
+}
+
+.info-section svg {
+  margin-right: 0.5rem;
+  color: #007bff;
+}
+
+.edit-button {
+  width: 100%;
+  margin-top: 1rem;
+}
+
+/* Адаптивность для мобильных устройств */
+@media (max-width: 768px) {
+  .advertisement-details-card {
+    padding: 1rem;
+  }
+
+  .main-photo-container {
+    margin-bottom: 2rem;
+  }
+
+  .additional-photos {
+    padding: 0.5rem 0;
+  }
+
+  .additional-photo {
+    width: 80px;
+    height: 80px;
+  }
+
+  .advertisement-info {
+    padding: 0;
+  }
+} 

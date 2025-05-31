@@ -1,0 +1,440 @@
+.pet-profile-container {
+  min-height: calc(100vh - 60px);
+  padding-top: 80px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+  font-family: "Roboto", sans-serif;
+}
+
+.pet-profile-container * {
+  box-sizing: border-box;
+}
+
+.pet-profile-card {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.pet-profile-title {
+  font-size: 1.8rem !important;
+  font-weight: 600 !important;
+  color: #FF9A9E !important;
+  margin-bottom: 2rem !important;
+  text-align: center !important;
+  padding-top: 0 !important;
+  font-family: "Roboto", sans-serif !important;
+}
+
+.pet-photo-section {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.pet-photo-container {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  max-width: 400px;
+  width: 100%;
+}
+
+.pet-photo {
+  width: 100%;
+  height: 300px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 3px solid white;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.photo-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 154, 158, 0.7);
+  border-radius: 12px;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.pet-photo-container:hover .photo-overlay {
+  opacity: 1;
+}
+
+.camera-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.photo-hint {
+  font-size: 0.9rem;
+  color: white;
+}
+
+.form-section {
+  margin-bottom: 2.5rem;
+  padding: 2rem;
+  border-radius: 15px;
+  background: #f8f9fa;
+  border: 1px solid rgba(255, 154, 158, 0.2);
+}
+
+.section-title {
+  font-size: 1.4rem !important;
+  font-weight: 600 !important;
+  color: #FF9A9E !important;
+  margin-bottom: 1.5rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.75rem !important;
+  font-family: "Roboto", sans-serif !important;
+}
+
+.form-group {
+  margin-bottom: 1.5rem !important;
+}
+
+.form-label {
+  font-weight: 500 !important;
+  color: #2c3e50 !important;
+  margin-bottom: 0.75rem !important;
+  font-size: 1rem !important;
+  display: block !important;
+  font-family: "Roboto", sans-serif !important;
+}
+
+.form-control {
+  border: 2px solid #e2e8f0 !important;
+  border-radius: 10px !important;
+  padding: 0.875rem 1rem !important;
+  font-size: 1rem !important;
+  transition: all 0.3s ease !important;
+  width: 100% !important;
+  color: #2c3e50 !important;
+  background-color: white !important;
+  font-weight: 500 !important;
+  font-family: "Roboto", sans-serif !important;
+  height: auto !important;
+  line-height: 1.5 !important;
+}
+
+.form-control::placeholder {
+  color: #a0aec0 !important;
+  font-size: 0.95rem !important;
+  font-weight: normal !important;
+  opacity: 1 !important;
+}
+
+.form-control:focus {
+  border-color: #FF9A9E;
+  box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.2);
+  outline: none;
+}
+
+.form-control:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  color: #718096;
+}
+
+select.form-control {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a0aec0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 1rem center !important;
+  background-size: 1em !important;
+  padding-right: 2.5rem !important;
+  cursor: pointer !important;
+}
+
+select.form-control:not([value=""]) {
+  color: #2c3e50 !important;
+  font-weight: 500 !important;
+}
+
+select.form-control option {
+  padding: 1rem !important;
+  font-size: 1rem !important;
+  color: #2c3e50 !important;
+  background-color: white !important;
+  font-weight: normal !important;
+}
+
+select.form-control option:checked {
+  background: #FF9A9E !important;
+  color: white !important;
+  font-weight: 500 !important;
+}
+
+select.form-control option[value=""] {
+  color: #a0aec0 !important;
+  font-style: italic !important;
+}
+
+/* Стили для активного select */
+select.form-control:focus {
+  border-color: #FF9A9E;
+  box-shadow: 0 0 0 3px rgba(255, 154, 158, 0.2);
+  outline: none;
+}
+
+/* Стили для disabled select */
+select.form-control:disabled option {
+  color: #718096;
+  background-color: #f8f9fa;
+}
+
+/* Убираем стандартные стили для Firefox */
+select.form-control:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #2c3e50;
+}
+
+/* Стили для Safari и Chrome */
+select.form-control::-ms-expand {
+  display: none;
+}
+
+textarea.form-control {
+  min-height: 120px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.button-group {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.action-button {
+  padding: 0.75rem;
+  border-radius: 10px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.save-button {
+  background: linear-gradient(45deg, #FF9A9E, #FAD0C4);
+  color: white;
+  border: none;
+}
+
+.save-button:hover {
+  background: linear-gradient(45deg, #FF8589, #F8C1B3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4);
+}
+
+.cancel-button {
+  background: #f8f9fa;
+  color: #FF9A9E;
+  border: 1px solid #FF9A9E;
+}
+
+.cancel-button:hover {
+  background: #FF9A9E;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.delete-button {
+  background: #fff5f5;
+  color: #FF9A9E;
+  border: 1px solid #FF9A9E;
+}
+
+.delete-button:hover {
+  background: #FF9A9E;
+  color: white;
+  transform: translateY(-2px);
+}
+
+.alert {
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.alert-danger {
+  background-color: #fff5f5;
+  border: 1px solid #FF9A9E;
+  color: #e53e3e;
+}
+
+.alert-success {
+  background-color: #f0fff4;
+  border: 1px solid #9ae6b4;
+  color: #2f855a;
+}
+
+.photo-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.gallery-item {
+  position: relative;
+  padding-top: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.gallery-item:hover {
+  border-color: #FF9A9E;
+}
+
+.gallery-item img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+
+.remove-photo {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(255, 154, 158, 0.9);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.gallery-item:hover .remove-photo {
+  opacity: 1;
+}
+
+.remove-photo:hover {
+  background: #FF9A9E;
+  transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+  .pet-profile-card {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .pet-photo {
+    height: 250px;
+  }
+  
+  .form-section {
+    padding: 1.5rem;
+  }
+  
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .photo-gallery {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+  
+  .pet-profile-title {
+    font-size: 1.5rem;
+  }
+  
+  .section-title {
+    font-size: 1.2rem;
+  }
+  
+  .form-control {
+    padding: 0.75rem;
+  }
+  
+  select.form-control {
+    font-size: 16px; /* Предотвращает зум на iOS */
+  }
+}
+
+@media (max-width: 768px) {
+  .pet-profile-card {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .pet-photo {
+    height: 250px;
+  }
+  
+  .form-section {
+    padding: 1.5rem;
+  }
+  
+  .button-group {
+    grid-template-columns: 1fr;
+  }
+  
+  .photo-gallery {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+}
+
+/* Исправление для Firefox */
+@-moz-document url-prefix() {
+  select.form-control {
+    color: #2c3e50 !important;
+    padding: 0.875rem 1rem !important;
+  }
+  
+  select.form-control option {
+    padding: 1rem !important;
+  }
+}
+
+/* Исправление для Safari */
+@media not all and (min-resolution:.001dpcm) {
+  @supports (-webkit-appearance:none) {
+    select.form-control {
+      padding: 0.875rem 2.5rem 0.875rem 1rem !important;
+    }
+  }
+} 
