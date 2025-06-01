@@ -6,12 +6,12 @@ import LoginPage from './components/pages/LoginPage'
 import RegisterPage from './components/pages/RegisterPage'
 import HomePage from './components/pages/HomePage'
 import ProfilePage from './components/pages/ProfilePage'
-import SearchByLocation from './components/pages/SearchByLocation';
-import SearchByPost from './components/pages/SearchByPost';
-import PetProfile from './components/pages/PetProfile';
-import MyAdvertisements from './components/pages/MyAdvertisements';
-import AdvertisementDetails from './components/pages/AdvertisementDetails';
-import EnhancedPetAnalysis from './components/pages/EnhancedPetAnalysis';
+import SearchByLocation from './components/pages/SearchByLocation'
+import SearchByPost from './components/pages/SearchByPost'
+import PetProfile from './components/pages/PetProfile'
+import MyAdvertisements from './components/pages/MyAdvertisements'
+import AdvertisementDetails from './components/pages/AdvertisementDetails'
+import EnhancedPetAnalysis from './components/pages/EnhancedPetAnalysis'
 import './App.css'
 
 const App = () => {

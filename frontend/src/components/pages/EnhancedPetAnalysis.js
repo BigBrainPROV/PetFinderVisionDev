@@ -154,7 +154,7 @@ const EnhancedPetAnalysis = () => {
     try {
       // Проверяем доступность ML сервиса
       console.log('🔍 Проверяем доступность ML сервиса...');
-      const healthResponse = await fetch('http://localhost:5004/', {
+      const healthResponse = await fetch('http://localhost:8000/api/similarity-search/', {
         method: 'GET',
         timeout: 5000
       });
@@ -167,9 +167,9 @@ const EnhancedPetAnalysis = () => {
 
       // Создаем FormData для отправки файла
       const formData = new FormData();
-      formData.append('file', selectedFile); // Важно: имя поля должно быть 'file'
+      formData.append('file', selectedFile);
 
-      const response = await fetch('http://localhost:5004/search/', {
+      const response = await fetch('http://localhost:8000/api/similarity-search/', {
         method: 'POST',
         body: formData
       });
@@ -181,10 +181,9 @@ const EnhancedPetAnalysis = () => {
 
       const data = await response.json();
       console.log('📦 Данные анализа получены:', data);
-      console.log('🔍 Похожие питомцы:', data.similar_lost_pets);
       
-      setAnalysisResults(data.analysis);
-      setSimilarPets(data.similar_lost_pets || []);
+      setAnalysisResults(data.analysis || {});
+      setSimilarPets(data || []);
       
     } catch (error) {
       console.error('💥 Ошибка при анализе:', error);
@@ -280,111 +279,44 @@ const EnhancedPetAnalysis = () => {
   };
 
   const renderSimilarPets = () => {
-    console.log('🐾 Rendering similar pets. Count:', similarPets.length);
-    console.log('🐾 Similar pets data:', similarPets);
-    
-    if (similarPets.length === 0) {
-      return (
-        <Card>
-          <Card.Header>
-            <h5><FaHeart className="me-2" />Похожие питомцы</h5>
-          </Card.Header>
-          <Card.Body>
-            <p className="text-muted">Похожие питомцы не найдены.</p>
-          </Card.Body>
-        </Card>
-      );
-    }
+    if (!similarPets || similarPets.length === 0) return null;
 
     return (
-      <Card>
+      <Card className="mb-4">
         <Card.Header>
-          <h5><FaHeart className="me-2" />Похожие питомцы ({similarPets.length})</h5>
+          <h5><FaSearch className="me-2" />Похожие питомцы</h5>
         </Card.Header>
         <Card.Body>
           <Row>
             {similarPets.map((pet, index) => (
-              <Col md={6} lg={4} key={pet.id} className="mb-4">
-                <Card className="h-100 pet-similarity-card">
-                  <div className="position-relative">
+              <Col key={index} md={4} className="mb-4">
+                <Card className="h-100">
+                  {pet.photo_url && (
                     <Card.Img 
                       variant="top" 
-                      src={pet.image_url ? `http://localhost:8000/uploads/${pet.image_url}` : 'https://via.placeholder.com/300x200?text=Нет+фото'}
+                      src={pet.photo_url} 
+                      alt={pet.title}
                       style={{ height: '200px', objectFit: 'cover' }}
                     />
-                    <div className="similarity-overlay">
-                      {pet.match_type === 'visual_similarity' ? (
-                        <Badge bg="success" className="similarity-badge">
-                          <FaEye className="me-1" />
-                          {Math.round(pet.similarity * 100)}% визуальное сходство
-                        </Badge>
-                      ) : pet.match_type === 'breed_match' ? (
-                        <Badge bg="primary" className="similarity-badge">
-                          <FaPaw className="me-1" />
-                          {Math.round(pet.similarity * 100)}% совпадение породы
-                        </Badge>
-                      ) : pet.match_type === 'color_match' ? (
-                        <Badge bg="warning" className="similarity-badge">
-                          <FaHeart className="me-1" />
-                          {Math.round(pet.similarity * 100)}% совпадение цвета
-                        </Badge>
-                      ) : pet.match_type === 'type_match' ? (
-                        <Badge bg="info" className="similarity-badge">
-                          <FaPaw className="me-1" />
-                          {Math.round(pet.similarity * 100)}% тип животного
-                        </Badge>
-                      ) : (
-                        <Badge 
-                          bg={pet.similarity >= 0.8 ? 'success' : pet.similarity >= 0.6 ? 'warning' : 'secondary'} 
-                          className="similarity-badge"
-                        >
-                          <FaPaw className="me-1" />
-                          {Math.round(pet.similarity * 100)}% сходство
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                  
+                  )}
                   <Card.Body>
-                    <Card.Title className="h6">{pet.title}</Card.Title>
-                    <div className="pet-details">
+                    <Card.Title>{pet.title}</Card.Title>
+                    <Card.Text>
                       <small className="text-muted">
-                        {formatLabel(pet.animal_type)} • {formatLabel(pet.color)}
-                        {pet.breed && pet.breed !== 'Неопределена' && (
-                          <> • {pet.breed}</>
-                        )}
+                        Порода: {formatLabel(pet.breed)}<br />
+                        Цвет: {formatLabel(pet.color)}<br />
+                        Тип: {formatLabel(pet.type)}<br />
+                        Схожесть: {formatConfidence(pet.similarity_score)}
                       </small>
-                    </div>
-                    
-                    {pet.ai_analyzed && (
-                      <div className="mt-2">
-                        <Badge bg="secondary" size="sm">
-                          <FaBrain className="me-1" />
-                          AI-анализ
-                        </Badge>
-                        {pet.ai_confidence && (
-                          <Badge bg={getConfidenceColor(pet.ai_confidence)} size="sm" className="ms-1">
-                            {formatConfidence(pet.ai_confidence)}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
-                    
-                    <div className="mt-2">
-                      <small className="text-muted">
-                        {new Date(pet.created_at).toLocaleDateString('ru-RU')}
-                      </small>
-                    </div>
-                  </Card.Body>
-                  
-                  <Card.Footer>
-                    <button 
-                      className="btn btn-outline-primary btn-sm w-100"
+                    </Card.Text>
+                    <Button 
+                      variant="outline-primary" 
+                      size="sm"
                       onClick={() => handleShowDetails(pet)}
                     >
                       Подробнее
-                    </button>
-                  </Card.Footer>
+                    </Button>
+                  </Card.Body>
                 </Card>
               </Col>
             ))}
