@@ -8,6 +8,7 @@ from skimage.color import rgb2hsv, rgb2lab
 from skimage.feature import local_binary_pattern
 from skimage.measure import regionprops, label
 import logging
+from similarity_search.services.clip_service import CLIPService
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,7 @@ class EnhancedPetAnalyzer:
             'cat': CatAnalyzer(), 
             'bird': BirdAnalyzer()
         }
+        self.clip_service = CLIPService()
         
     def analyze_pet(self, image):
         """Основной метод анализа питомца"""
@@ -36,6 +38,9 @@ class EnhancedPetAnalyzer:
             else:
                 specialized_analysis = self._generic_analysis(image, base_features)
             
+            # Поиск похожих животных
+            similar_pets = self.clip_service.search(image, top_k=5)
+            
             return {
                 'animal_type': {
                     'label': animal_type,
@@ -49,7 +54,8 @@ class EnhancedPetAnalyzer:
                 'detailed_metrics': {
                     'base_features': base_features,
                     'specialized_analysis': specialized_analysis
-                }
+                },
+                'similar_pets': similar_pets
             }
             
         except Exception as e:

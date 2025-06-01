@@ -115,37 +115,57 @@
 }
 
 .pet-similarity-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
   border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
   overflow: hidden;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
 }
 
 .pet-similarity-card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 }
 
 .similarity-overlay {
   position: absolute;
   top: 10px;
   right: 10px;
-  z-index: 2;
+  z-index: 1;
 }
 
 .similarity-badge {
-  font-size: 0.75rem;
-  padding: 0.4rem 0.8rem;
+  font-size: 0.9rem;
+  padding: 0.5rem 1rem;
   border-radius: 20px;
-  backdrop-filter: blur(10px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .pet-details {
-  margin-bottom: 0.5rem;
+  margin-top: 0.5rem;
+  color: #666;
+}
+
+.pet-similarity-card .card-footer {
+  background: transparent;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+}
+
+.pet-similarity-card .btn-outline-primary {
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.pet-similarity-card .btn-outline-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Анимации для прогресс-баров */
