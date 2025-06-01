@@ -1,4 +1,6 @@
 from rest_framework import serializers
+from django.core.exceptions import ValidationError
+import os
 
 from advertisements.models import Advertisement
 
@@ -65,6 +67,35 @@ class AdvertisementCreateSerializer(serializers.ModelSerializer):
             "longitude",
             "location",
         ]
+
+    def validate_photo(self, value):
+        """
+        Валидация загружаемого фото
+        """
+        if value:
+            # Проверка размера файла (максимум 10 МБ)
+            max_size = 10 * 1024 * 1024  # 10 МБ
+            if value.size > max_size:
+                raise serializers.ValidationError(
+                    'Размер файла слишком большой. Максимальный размер: 10 МБ'
+                )
+            
+            # Проверка типа файла
+            allowed_extensions = ['.jpg', '.jpeg', '.png', '.webp']
+            ext = os.path.splitext(value.name)[1].lower()
+            if ext not in allowed_extensions:
+                raise serializers.ValidationError(
+                    'Неподдерживаемый формат файла. Разрешены: JPG, PNG, WebP'
+                )
+            
+            # Проверка MIME типа
+            allowed_types = ['image/jpeg', 'image/png', 'image/webp']
+            if hasattr(value, 'content_type') and value.content_type not in allowed_types:
+                raise serializers.ValidationError(
+                    'Неподдерживаемый тип файла. Загрузите изображение в формате JPG, PNG или WebP'
+                )
+        
+        return value
 
     def create(self, validated_data):
         return Advertisement.objects.create(**validated_data)

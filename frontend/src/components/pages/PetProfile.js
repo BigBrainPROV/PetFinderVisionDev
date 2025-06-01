@@ -71,6 +71,7 @@ const PetProfile = ({ match, history }) => {
     { value: 'heterochromia', label: 'Гетерохромия' },
     { value: 'ear_fold', label: 'Залом на ухе' },
     { value: 'eye_spot', label: 'Пятно на глазу' },
+    { value: 'missing_eye', label: 'Нет глазика' },
     { value: 'tail_missing', label: 'Отсутствует хвост' },
     { value: 'limb_missing', label: 'Отсутствует лапка' },
     { value: 'albino', label: 'Альбинизм' },

@@ -66,6 +66,7 @@ class SpecialFeatures(models.TextChoices):
     HETEROCHROMIA = 'heterochromia', 'Гетерохромия'
     EAR_FOLD = 'ear_fold', 'Залом на ухе'
     EYE_SPOT = 'eye_spot', 'Пятно на глазу'
+    MISSING_EYE = 'missing_eye', 'Нет глазика'
     TAIL_MISSING = 'tail_missing', 'Отсутствует хвост'
     LIMB_MISSING = 'limb_missing', 'Отсутствует лапка'
     ALBINO = 'albino', 'Альбинизм'
@@ -114,7 +115,7 @@ class Advertisement(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     description = models.TextField(verbose_name='Описание')
     author = models.CharField(max_length=255, verbose_name='Автор')
-    photo = models.ImageField(upload_to='advertisements/', verbose_name='Фото')
+    photo = models.ImageField(upload_to='advertisements/', verbose_name='Фото', null=True, blank=True)
     phone = models.CharField(
         validators=[phone_regex],
         max_length=15,

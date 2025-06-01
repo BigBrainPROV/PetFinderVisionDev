@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Container, Form, Button, Card, Row, Col, Modal, Spinner, Alert } from 'react-bootstrap';
 import { YMaps, Map, Placemark, SearchControl, ZoomControl } from '@pbe/react-yandex-maps';
-import { FaPaw, FaMapMarkerAlt, FaFilter, FaLocationArrow, FaSearch } from 'react-icons/fa';
+import { FaPaw, FaMapMarkerAlt, FaFilter, FaSearch } from 'react-icons/fa';
 import NavbarComp from './NavbarComp';
 import api from '../../api/config';
 import { YANDEX_MAPS_API_KEY, DEFAULT_CENTER, DEFAULT_ZOOM } from '../../config';
@@ -38,13 +38,6 @@ const SearchByLocation = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fileInputRef = useRef(null);
   const [breeds, setBreeds] = useState([]);
-
-  // Новые состояния для поиска по геопозиции
-  const [searchRadius, setSearchRadius] = useState(5); // радиус в км
-  const [userLocation, setUserLocation] = useState(null);
-  const [locationError, setLocationError] = useState('');
-  const [isGettingLocation, setIsGettingLocation] = useState(false);
-  const [useNearbySearch, setUseNearbySearch] = useState(false);
 
   const animalTypes = [
     { value: 'cat', label: 'Кошка' },
@@ -103,184 +96,6 @@ const SearchByLocation = () => {
     { value: 'vitiligo', label: 'Витилиго' },
     { value: 'none', label: 'Нет особых примет' }
   ];
-
-  const getUserLocation = useCallback(() => {
-    if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-          const newCenter = [position.coords.latitude, position.coords.longitude];
-          setMapCenter(newCenter);
-          if (mapRef) {
-            mapRef.setCenter(newCenter);
-          }
-      },
-      (error) => {
-          console.log('Ошибка получения геопозиции:', error);
-          // Используем значения по умолчанию для центра Екатеринбурга
-          const defaultCenter = [56.8431, 60.6454];
-          setMapCenter(defaultCenter);
-          if (mapRef) {
-            mapRef.setCenter(defaultCenter);
-          }
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 5000,
-          maximumAge: 0
-        }
-      );
-    } else {
-      console.log('Геолокация не поддерживается браузером');
-      // Используем значения по умолчанию для центра Екатеринбурга
-      const defaultCenter = [56.8431, 60.6454];
-      setMapCenter(defaultCenter);
-      if (mapRef) {
-        mapRef.setCenter(defaultCenter);
-      }
-    }
-  }, [mapRef]);
-
-  // Новая функция для получения точного местоположения пользователя
-  const getCurrentUserLocation = () => {
-    setIsGettingLocation(true);
-    setLocationError('');
-
-    if (!navigator.geolocation) {
-      setLocationError('Геолокация не поддерживается вашим браузером');
-      setIsGettingLocation(false);
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const coords = [position.coords.latitude, position.coords.longitude];
-        setUserLocation(coords);
-        setMapCenter(coords);
-        setUseNearbySearch(true);
-        if (mapRef) {
-          mapRef.setCenter(coords);
-          mapRef.setZoom(14);
-        }
-        setIsGettingLocation(false);
-        // Автоматически выполняем поиск рядом с пользователем
-        fetchNearbyAdvertisements(coords, searchRadius);
-      },
-      (error) => {
-        console.error('Ошибка получения геопозиции:', error);
-        let errorMessage = 'Не удалось получить ваше местоположение. ';
-        switch (error.code) {
-          case error.PERMISSION_DENIED:
-            errorMessage += 'Доступ к геолокации запрещен.';
-            break;
-          case error.POSITION_UNAVAILABLE:
-            errorMessage += 'Информация о местоположении недоступна.';
-            break;
-          case error.TIMEOUT:
-            errorMessage += 'Время ожидания истекло.';
-            break;
-          default:
-            errorMessage += 'Произошла неизвестная ошибка.';
-            break;
-        }
-        setLocationError(errorMessage);
-        setIsGettingLocation(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 10000,
-        maximumAge: 0
-      }
-    );
-  };
-
-  // Функция поиска объявлений рядом с указанными координатами
-  const fetchNearbyAdvertisements = async (coordinates = userLocation, radius = searchRadius) => {
-    if (!coordinates) {
-      setError('Местоположение не определено');
-      return;
-    }
-
-    try {
-      setLoading(true);
-      setError('');
-
-      const [latitude, longitude] = coordinates;
-      const params = {
-        latitude,
-        longitude,
-        radius,
-      };
-
-      if (selectedType !== 'all') {
-        params.type = selectedType;
-      }
-
-      console.log('Поиск объявлений рядом с координатами:', { latitude, longitude, radius });
-
-      const response = await api.get('/api/advertisements/nearby/', { params });
-      
-      console.log('Найденные объявления поблизости:', response.data);
-      
-      // Добавляем значения по умолчанию для каждого объявления
-      const processedAds = response.data.map(ad => ({
-        ...ad,
-        color: ad.color || 'white',
-        sex: ad.sex || 'unknown',
-        eye_color: ad.eye_color || 'yellow',
-        face_shape: ad.face_shape || 'round',
-        special_features: ad.special_features || 'none'
-      }));
-      
-      setAdvertisements(processedAds);
-    } catch (error) {
-      console.error('Ошибка при поиске объявлений поблизости:', error);
-      setError(`Не удалось найти объявления поблизости: ${error.response?.data?.error || error.message}`);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchAdvertisements = useCallback(async () => {
-    // Если включен поиск по местоположению, используем поиск поблизости
-    if (useNearbySearch && userLocation) {
-      return fetchNearbyAdvertisements();
-    }
-
-    try {
-      setLoading(true);
-      const response = await api.get('/api/advertisements/', {
-        params: {
-          type: selectedType !== 'all' ? selectedType : undefined
-        }
-      });
-      console.log('Полученные объявления:', response.data);
-      
-      // Добавляем значения по умолчанию для каждого объявления
-      const processedAds = response.data.map(ad => ({
-        ...ad,
-        color: ad.color || 'white',
-        sex: ad.sex || 'unknown',
-        eye_color: ad.eye_color || 'yellow',
-        face_shape: ad.face_shape || 'round',
-        special_features: ad.special_features || 'none'
-      }));
-      
-      setAdvertisements(processedAds);
-    } catch (error) {
-      console.error('Ошибка при загрузке объявлений:', error);
-      setError('Не удалось загрузить объявления');
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedType, useNearbySearch, userLocation, searchRadius]);
-
-  useEffect(() => {
-    fetchAdvertisements();
-  }, [fetchAdvertisements]);
-
-  useEffect(() => {
-    getUserLocation();
-  }, [getUserLocation]);
 
   const handleTypeChange = (event) => {
     setSelectedType(event.target.value);
@@ -511,10 +326,7 @@ const SearchByLocation = () => {
   const loadBreeds = async (animalType) => {
     try {
       const response = await api.get(`/api/users/breeds/?type=${animalType}`);
-      setBreeds(response.data.map(breed => ({
-        value: breed,
-        label: breed
-      })));
+      setBreeds(response.data);
     } catch (error) {
       console.error('Ошибка при загрузке пород:', error);
       setBreeds([]);
@@ -526,6 +338,52 @@ const SearchByLocation = () => {
       loadBreeds(newMarkerData.type);
     }
   }, [newMarkerData.type]);
+
+  const setMapToEkaterinburg = useCallback(() => {
+    // Устанавливаем центр карты на Екатеринбург
+    const ekaterinburgCenter = [56.8431, 60.6454];
+    setMapCenter(ekaterinburgCenter);
+    if (mapRef) {
+      mapRef.setCenter(ekaterinburgCenter);
+    }
+  }, [mapRef]);
+
+  const fetchAdvertisements = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await api.get('/api/advertisements/', {
+        params: {
+          type: selectedType !== 'all' ? selectedType : undefined
+        }
+      });
+      console.log('Полученные объявления:', response.data);
+      
+      // Добавляем значения по умолчанию для каждого объявления
+      const processedAds = response.data.map(ad => ({
+        ...ad,
+        color: ad.color || 'white',
+        sex: ad.sex || 'unknown',
+        eye_color: ad.eye_color || 'yellow',
+        face_shape: ad.face_shape || 'round',
+        special_features: ad.special_features || 'none'
+      }));
+      
+      setAdvertisements(processedAds);
+    } catch (error) {
+      console.error('Ошибка при загрузке объявлений:', error);
+      setError('Не удалось загрузить объявления');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedType]);
+
+  useEffect(() => {
+    fetchAdvertisements();
+  }, [fetchAdvertisements]);
+
+  useEffect(() => {
+    setMapToEkaterinburg();
+  }, [setMapToEkaterinburg]);
 
   return (
     <div className="search-location-container">
@@ -564,91 +422,6 @@ const SearchByLocation = () => {
           </div>
 
             <div className={`filters-content ${showFilters ? 'show' : ''}`}>
-              {/* Поиск по местоположению */}
-              <div className="location-search-section">
-                <h5 className="mb-3">
-                  <FaLocationArrow className="me-2" />
-                  Поиск по местоположению
-                </h5>
-                
-                {/* Кнопка получения местоположения */}
-                <Button
-                  variant={useNearbySearch ? "success" : "primary"}
-                  className="w-100 mb-3"
-                  onClick={getCurrentUserLocation}
-                  disabled={isGettingLocation}
-                >
-                  {isGettingLocation ? (
-                    <>
-                      <Spinner size="sm" className="me-2" />
-                      Определяем...
-                    </>
-                  ) : useNearbySearch ? (
-                    <>
-                      <FaLocationArrow className="me-2" />
-                      Поиск рядом активен
-                    </>
-                  ) : (
-                    <>
-                      <FaLocationArrow className="me-2" />
-                      Найти рядом со мной
-                    </>
-                  )}
-                </Button>
-
-                {/* Переключатель режима поиска */}
-                {userLocation && (
-                  <Form.Check
-                    type="switch"
-                    id="nearby-search-toggle"
-                    label="Поиск только рядом со мной"
-                    checked={useNearbySearch}
-                    onChange={(e) => setUseNearbySearch(e.target.checked)}
-                    className="mb-3"
-                  />
-                )}
-
-                {/* Слайдер радиуса поиска */}
-                {useNearbySearch && userLocation && (
-                  <Form.Group className="mb-3">
-                    <Form.Label>
-                      Радиус поиска: {searchRadius} км
-                    </Form.Label>
-                    <Form.Range
-                      min={1}
-                      max={50}
-                      value={searchRadius}
-                      onChange={(e) => setSearchRadius(parseInt(e.target.value))}
-                      onMouseUp={() => fetchNearbyAdvertisements()}
-                    />
-                    <div className="d-flex justify-content-between small text-muted">
-                      <span>1 км</span>
-                      <span>50 км</span>
-                    </div>
-                  </Form.Group>
-                )}
-
-                {/* Информация о местоположении */}
-                {userLocation && (
-                  <div className="location-info">
-                    <small className="text-muted">
-                      <FaMapMarkerAlt className="me-1" />
-                      Широта: {userLocation[0].toFixed(4)}<br/>
-                      Долгота: {userLocation[1].toFixed(4)}
-                    </small>
-                  </div>
-                )}
-
-                {/* Ошибка геолокации */}
-                {locationError && (
-                  <Alert variant="warning" className="mt-2">
-                    {locationError}
-                  </Alert>
-                )}
-              </div>
-
-              <hr />
-
               {/* Фильтр по типу животного */}
               <Form.Group>
                 <Form.Label>Тип животного</Form.Label>
@@ -670,7 +443,7 @@ const SearchByLocation = () => {
               <Button
                 variant="outline-primary"
                 className="w-100 mt-3"
-                onClick={() => useNearbySearch && userLocation ? fetchNearbyAdvertisements() : fetchAdvertisements()}
+                onClick={() => fetchAdvertisements()}
                 disabled={loading}
               >
                 <FaSearch className="me-2" />
@@ -687,8 +460,11 @@ const SearchByLocation = () => {
                     >
                       <Card.Img
                         variant="top"
-                        src={ad.photo}
+                        src={ad.photo || '/default-pet-image.svg'}
                         className="card-image"
+                        onError={(e) => {
+                          e.target.src = '/default-pet-image.svg';
+                        }}
                       />
                       <Card.Body>
                         <div className={`status-badge status-${ad.status}`}>
@@ -751,43 +527,31 @@ const SearchByLocation = () => {
                         balloonContentHeader: ad.title,
                         balloonContentBody: `
                           <div style="padding: 10px;">
-                            <img src="${ad.photo}" 
-                                 style="width: 150px; height: 100px; object-fit: cover; border-radius: 8px;" />
+                            ${ad.photo ? `<img src="${ad.photo}" 
+                                 style="width: 150px; height: 100px; object-fit: cover; border-radius: 8px;" />` : '<div style="width: 150px; height: 100px; background: #f0f0f0; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #666;">Фото отсутствует</div>'}
                             <p>${ad.description}</p>
                             <p><strong>Статус:</strong> ${getStatusLabel(ad.status)}</p>
                             <p><strong>Тип:</strong> ${getTypeLabel(ad.type)}</p>
-                            <p><strong>Порода:</strong> ${ad.breed || 'Не указана'}</p>
+                            ${ad.breed ? `<p><strong>Порода:</strong> ${ad.breed}</p>` : ''}
                             <p><strong>Цвет:</strong> ${getColorLabel(ad.color)}</p>
                             <p><strong>Пол:</strong> ${getSexLabel(ad.sex)}</p>
+                            <p><strong>Местоположение:</strong> ${ad.location || 'Определяется...'}</p>
+                            <p><strong>Автор:</strong> ${ad.author}</p>
+                            <p><strong>Телефон:</strong> ${ad.phone || 'Не указан'}</p>
+                            ${ad.social_media ? `<p><strong>Соцсети:</strong> <a href="${ad.social_media}" target="_blank">Ссылка</a></p>` : ''}
                           </div>
+                        `,
+                        balloonContentFooter: `
+                          ${ad.photo ? `<button style="padding: 5px 10px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px;" 
+                                  onclick="window.open('${ad.photo}', '_blank')">
+                            Открыть фото
+                          </button>` : ''}
                         `
                       }}
                       onClick={() => handleShowDetails(ad)}
                     />
                   ) : null
                 ))}
-
-                {/* Маркер текущего местоположения пользователя */}
-                {userLocation && (
-                  <Placemark
-                    geometry={userLocation}
-                    options={{
-                      preset: 'islands#blueCircleDotIcon',
-                      iconColor: '#007bff'
-                    }}
-                    properties={{
-                      balloonContentHeader: 'Ваше местоположение',
-                      balloonContentBody: `
-                        <div style="padding: 10px;">
-                          <p><strong>Координаты:</strong></p>
-                          <p>Широта: ${userLocation[0].toFixed(6)}</p>
-                          <p>Долгота: ${userLocation[1].toFixed(6)}</p>
-                          <p><strong>Радиус поиска:</strong> ${searchRadius} км</p>
-                        </div>
-                      `
-                    }}
-                  />
-                )}
 
                 {newMarkerPosition && (
                   <Placemark
@@ -884,8 +648,8 @@ const SearchByLocation = () => {
                   >
                     <option value="">Выберите породу</option>
                     {breeds.map(breed => (
-                      <option key={breed.value} value={breed.value}>
-                        {breed.label}
+                      <option key={breed} value={breed}>
+                        {breed}
                       </option>
                     ))}
                   </Form.Select>

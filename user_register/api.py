@@ -3,7 +3,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 from user_register.serializers import UserSerializer
 from user_register.models import UserProfile
@@ -27,7 +27,7 @@ class UserViewSet(viewsets.ModelViewSet):
                 request.data["profile"].pop("phone")
         return super().update(request, *args, **kwargs)
 
-    @action(methods=["get"], detail=False)
+    @action(methods=["get"], detail=False, permission_classes=[AllowAny])
     def breeds(self, request):
         """
         Получить список пород в зависимости от типа животного.

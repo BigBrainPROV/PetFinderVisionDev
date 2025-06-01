@@ -1,0 +1,7 @@
+<svg width="300" height="200" xmlns="http://www.w3.org/2000/svg">
+  <rect width="300" height="200" fill="#f0f0f0"/>
+  <g fill="#666666" font-family="Arial, sans-serif" font-size="16" text-anchor="middle">
+    <text x="150" y="95">🐾</text>
+    <text x="150" y="115">Фото отсутствует</text>
+  </g>
+</svg> 

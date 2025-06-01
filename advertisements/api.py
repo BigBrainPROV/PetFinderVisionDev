@@ -39,6 +39,8 @@ class AdvertisementViewSet(ModelViewSet):
         """
         if self.action == 'my_advertisements':
             permission_classes = [IsAuthenticated]
+        elif self.action == 'create':
+            permission_classes = [AllowAny]  # Разрешаем анонимное создание объявлений
         else:
             permission_classes = [IsAuthenticatedOrReadOnly]
         return [permission() for permission in permission_classes]
@@ -56,6 +58,10 @@ class AdvertisementViewSet(ModelViewSet):
             # Добавляем автора объявления
             if request.user.is_authenticated:
                 request.data['author'] = request.user.username
+            else:
+                # Для анонимных пользователей используем указанного автора или "Аноним"
+                if 'author' not in request.data or not request.data['author']:
+                    request.data['author'] = 'Аноним'
                 
             serializer = self.get_serializer(data=request.data)
             if not serializer.is_valid():

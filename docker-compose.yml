@@ -1,12 +1,23 @@
 version: '3.8'
 
 services:
-  backend:
-    build: .
-    ports:
-      - "8000:8000"
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14
+    container_name: petfinder_postgres
     environment:
-      - DEBUG=1
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
     volumes:
-      - .:/app
-    command: python manage.py runserver 0.0.0.0:8000 
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  petfinder_network:
+    driver: bridge 
